@@ -3,7 +3,7 @@ staticmapservice - A web service that generates static maps
 
 About
 -----
-staticmapservice is a web service written in Python that generates static maps similar to the Maps Static API by Google. Essentially this software is a simple [Flask](http://flask.pocoo.org/) wrapper around the Python library [staticmap](https://github.com/komoot/staticmap). Please note that this software does not support all the features of staticmap, yet. At the moment, it can generate static maps based on [OpenStreetMaps](https://openstreetmap.org) tiles with one circle marker.
+staticmapservice is a web service written in Python that generates static maps similar to the Maps Static API by Google. Essentially this software is a [Flask](http://flask.pocoo.org/) wrapper around the Python library [staticmap](https://github.com/komoot/staticmap). Please note that this software does not support all the features of staticmap, yet. At the moment, it can generate static maps based on XYZ tiles (e.g. [OpenStreetMap based data](https://wiki.openstreetmap.org/wiki/Tile_servers)) with circle markers, lines and polygons.
 
 Usage
 -----
@@ -28,24 +28,23 @@ Usage
     ```
 5. In your browser, send a request with some query parameters to the API. Here's an example that should work:
     ```
-    http://127.0.0.1:5000/?w=400&h=300&z=7&mlat=48.2&mlon=11.2&msiz=12&mcol=%23CD0000
+    http://127.0.0.1:5000/?w=400&h=300&z=9&markers=coords:48.25,11.22|size:10|color:%233F33FF
     ```
-    As a response you should get a static map of southern Germany with a red marker next to the city of Munich. See below for a detailed list of currently supported query parameters.
+    As a response you should get a static map of southern Bavaria with a blue marker next to the city of Munich. See below for a detailed list of currently supported query parameters.
 
 Query parameters
 ----------------
 
 This is a list of currently supported query parameters.
 
-| Parameter | Meaning |
-| --- | --- |
-| w | Width of the map |
-| h | Height of the map |
-| z | Zoom level |
-| mlat | Latitude of marker |
-| mlon | Longitude of marker |
-| msiz | Size of marker |
-| mcol | Color of marker as Hex code (# encoded as %23) |
+| Parameter | Meaning | Example |
+| --- | --- | --- |
+| w | Width of the map in pixels | w=400 |
+| h | Height of the map in pixels | h=300 |
+| z | Zoom level | z=10 |
+| markers | Coordinates (a lat/lon pair), size (diameter in pixels) and color (hexadecimal code, # encoded as %23) of a circle marker | markers=coords:48.25,11.22\|size:10\|color:%233F33FF |
+| lines | Coordinates (two lat/lon pairs), size (width in pixels) and color (hexadecimal code, # encoded as %23) of a line | lines=coords:48.2,11.2;47.5,11\|size:4\|color:%23CD0000 |
+| polygons | Coordinates (multiple lat/lon pairs), fill and outline color (hexadecimal codes, # encoded as %23) of a polygon | polygons=coords:48.2,11.2;47.5,11;47.9,12;48.2,11.2\|fcolor:%23CD0000\|ocolor:%23000000 |
 
 License
 -------
