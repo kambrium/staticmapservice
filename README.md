@@ -28,7 +28,7 @@ Usage
     ```
 5. In your browser, send a request with some query parameters to the API. Here's an example that should work:
     ```
-    http://127.0.0.1:5000/?w=400&h=300&z=9&markers=coords:48.25,11.22|size:10|color:%233F33FF
+    http://127.0.0.1:5000/?w=400&h=300&z=9&markers=coords:48.25,11.22|diam:10|color:%233F33FF
     ```
     As a response you should get a static map of southern Bavaria with a blue marker next to the city of Munich. See below for a detailed list of currently supported query parameters.
 
@@ -42,7 +42,7 @@ This is a list of currently supported query parameters.
 | w | Width of the map in pixels | w=400 |
 | h | Height of the map in pixels | h=300 |
 | z | Zoom level | z=10 |
-| markers | Coordinates (a lat/lon pair), size (diameter in pixels) and color (hexadecimal code, # encoded as %23) of a circle marker | markers=coords:48.25,11.22\|size:10\|color:%233F33FF |
+| markers | Coordinates (a lat/lon pair), diameter (in pixels) and color (hexadecimal code, # encoded as %23) of a circle marker | markers=coords:48.25,11.22\|diam:10\|color:%233F33FF |
 | lines | Coordinates (two lat/lon pairs), size (width in pixels) and color (hexadecimal code, # encoded as %23) of a line | lines=coords:48.2,11.2;47.5,11\|size:4\|color:%23CD0000 |
 | polygons | Coordinates (multiple lat/lon pairs), fill and outline color (hexadecimal codes, # encoded as %23) of a polygon | polygons=coords:48.2,11.2;47.5,11;47.9,12;48.2,11.2\|fcolor:%23CD0000\|ocolor:%23000000 |
 

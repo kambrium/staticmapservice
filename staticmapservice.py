@@ -20,8 +20,8 @@ def create_map():
                 marker_lat = float(marker_properties['coords'].split(',')[0])
                 marker_lon = float(marker_properties['coords'].split(',')[1])
                 marker_color = marker_properties['color']
-                marker_size = int(marker_properties['size'])
-                marker_object = CircleMarker((marker_lon, marker_lat), marker_color, marker_size)
+                marker_diameter = int(marker_properties['diam'])
+                marker_object = CircleMarker((marker_lon, marker_lat), marker_color, marker_diameter)
                 m.add_marker(marker_object)
 
         if 'lines' in request.args:
