@@ -3,6 +3,7 @@ from io import BytesIO
 from staticmap import CircleMarker, Line, Polygon, StaticMap
 
 app = Flask(__name__)
+app.config.from_pyfile('config.py')
 
 @app.route('/')
 def create_map():
@@ -11,7 +12,7 @@ def create_map():
         height = int(request.args.get('h'))
         zoom = int(request.args.get('z'))
 
-        m = StaticMap(width, height, url_template='http://a.tile.osm.org/{z}/{x}/{y}.png')
+        m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
         if 'markers' in request.args:
             for marker in request.args.getlist('markers'):
@@ -56,7 +57,7 @@ def create_map():
         return serve_image(image)
 
     except:
-        return ('Something went wrong during the creation of your map. Please check your query parameters. A working example is /?w=400&h=300&z=7&mlat=48.2&mlon=11.2&msiz=12&mcol=%23CD0000.')
+        return (app.config['INFO_TEXT'])
 
 def serve_image(image):
     image_io = BytesIO()
