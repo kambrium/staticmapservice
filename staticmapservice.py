@@ -1,6 +1,6 @@
 from flask import Flask, request, send_file
 from io import BytesIO
-from staticmap import CircleMarker, Line, StaticMap
+from staticmap import CircleMarker, Line, Polygon, StaticMap
 
 app = Flask(__name__)
 
@@ -36,6 +36,20 @@ def create_map():
                 line_size = int(line_properties['size'])
                 line_object = Line(line_coordinates, line_color, line_size)
                 m.add_line(line_object)
+
+        if 'polygons' in request.args:
+            for polygon in request.args.getlist('polygons'):
+                polygon_properties = dict(item.split(':') for item in polygon.split('|'))
+                polygon_coordinates = []
+                for coord in polygon_properties['coords'].split(';'):
+                    polygon_coordinate = []
+                    polygon_coordinate.append(float(coord.split(',')[1]))
+                    polygon_coordinate.append(float(coord.split(',')[0]))
+                    polygon_coordinates.append(polygon_coordinate)
+                polygon_fill_color = polygon_properties['fcolor']
+                polygon_outline_color = polygon_properties['ocolor']
+                polygon_object = Polygon(polygon_coordinates, polygon_fill_color, polygon_outline_color)
+                m.add_polygon(polygon_object)
 
         image = m.render(zoom=zoom)
 
