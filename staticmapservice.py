@@ -16,8 +16,8 @@ def create_map():
         if 'markers' in request.args:
             for marker in request.args.getlist('markers'):
                 marker_properties = dict(item.split(':') for item in marker.split('|'))
-                marker_lat = float(marker_properties['lat'])
-                marker_lon = float(marker_properties['lon'])
+                marker_lat = float(marker_properties['coords'].split(',')[0])
+                marker_lon = float(marker_properties['coords'].split(',')[1])
                 marker_color = marker_properties['color']
                 marker_size = int(marker_properties['size'])
                 marker_object = CircleMarker((marker_lon, marker_lat), marker_color, marker_size)
