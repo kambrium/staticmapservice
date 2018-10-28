@@ -34,8 +34,8 @@ def create_map():
                     line_coordinate.append(float(coord.split(',')[0]))
                     line_coordinates.append(line_coordinate)
                 line_color = line_properties['color']
-                line_size = int(line_properties['size'])
-                line_object = Line(line_coordinates, line_color, line_size)
+                line_width = int(line_properties['width'])
+                line_object = Line(line_coordinates, line_color, line_width)
                 m.add_line(line_object)
 
         if 'polygons' in request.args:

@@ -43,7 +43,7 @@ This is a list of currently supported query parameters.
 | h | Height of the map in pixels | h=300 |
 | z | Zoom level | z=10 |
 | markers | Coordinates (a lat/lon pair), diameter (in pixels) and color (hexadecimal code, # encoded as %23) of a circle marker | markers=coords:48.25,11.22\|diam:10\|color:%233F33FF |
-| lines | Coordinates (two lat/lon pairs), size (width in pixels) and color (hexadecimal code, # encoded as %23) of a line | lines=coords:48.2,11.2;47.5,11\|size:4\|color:%23CD0000 |
+| lines | Coordinates (two lat/lon pairs), width (in pixels) and color (hexadecimal code, # encoded as %23) of a line | lines=coords:48.2,11.2;47.5,11\|width:4\|color:%23CD0000 |
 | polygons | Coordinates (multiple lat/lon pairs), fill and outline color (hexadecimal codes, # encoded as %23) of a polygon | polygons=coords:48.2,11.2;47.5,11;47.9,12;48.2,11.2\|fcolor:%23CD0000\|ocolor:%23000000 |
 
 License
