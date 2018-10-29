@@ -7,13 +7,19 @@ app.config.from_pyfile('config.py')
 
 @app.route('/')
 def create_map():
+    try:
+        width = int(request.args.get('w', default = app.config['DEFAULT_WIDTH']))
+        if width > int(app.config['MAX_WIDTH']):
+            return 'Width out of range', 400
+    except:
+        return 'Could not process width', 400
     
-    width = int(request.args.get('w', default = app.config['DEFAULT_WIDTH']))
-    if width > int(app.config['MAX_WIDTH']):
-        return 'Width out of range', 400
-    height = int(request.args.get('h', default = app.config['DEFAULT_HEIGHT']))
-    if width > int(app.config['MAX_HEIGHT']):
-        return 'Width out of range', 400
+    try:
+        height = int(request.args.get('h', default = app.config['DEFAULT_HEIGHT']))
+        if width > int(app.config['MAX_HEIGHT']):
+            return 'Width out of range', 400
+    except:
+        return 'Could not process height', 400
 
     try:
         zoom = int(request.args.get('z', default = app.config['DEFAULT_ZOOM']))
