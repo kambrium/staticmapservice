@@ -8,9 +8,9 @@ app.config.from_pyfile('config.py')
 @app.route('/')
 def create_map():
     try:
-        width = int(request.args.get('w'))
-        height = int(request.args.get('h'))
-        zoom = int(request.args.get('z'))
+        width = int(request.args.get('w', default = app.config['DEFAULT_WIDTH']))
+        height = int(request.args.get('h', default = app.config['DEFAULT_HEIGHT']))
+        zoom = int(request.args.get('z', default = app.config['DEFAULT_ZOOM']))
 
         m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
