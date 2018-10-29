@@ -16,8 +16,8 @@ def create_map():
     
     try:
         height = int(request.args.get('h', default = app.config['DEFAULT_HEIGHT']))
-        if width > int(app.config['MAX_HEIGHT']):
-            return 'Width out of range', 400
+        if height > int(app.config['MAX_HEIGHT']):
+            return 'Height out of range', 400
     except:
         return 'Could not process height', 400
 
