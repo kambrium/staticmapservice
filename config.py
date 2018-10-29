@@ -6,3 +6,6 @@ INFO_TEXT = 'Something went wrong during the creation of your map. Please check 
 DEFAULT_WIDTH = '300'
 DEFAULT_HEIGHT = '200'
 DEFAULT_ZOOM = '10'
+
+MAX_WIDTH = '800'
+MAX_HEIGHT = '800'

@@ -7,9 +7,15 @@ app.config.from_pyfile('config.py')
 
 @app.route('/')
 def create_map():
+    
+    width = int(request.args.get('w', default = app.config['DEFAULT_WIDTH']))
+    if width > int(app.config['MAX_WIDTH']):
+        return 'Width out of range', 400
+    height = int(request.args.get('h', default = app.config['DEFAULT_HEIGHT']))
+    if width > int(app.config['MAX_HEIGHT']):
+        return 'Width out of range', 400
+
     try:
-        width = int(request.args.get('w', default = app.config['DEFAULT_WIDTH']))
-        height = int(request.args.get('h', default = app.config['DEFAULT_HEIGHT']))
         zoom = int(request.args.get('z', default = app.config['DEFAULT_ZOOM']))
 
         m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
