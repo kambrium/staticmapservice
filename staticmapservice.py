@@ -23,7 +23,12 @@ def create_map():
 
     try:
         zoom = int(request.args.get('z', default = app.config['DEFAULT_ZOOM']))
+        if zoom > int(app.config['MAX_ZOOM']):
+            return 'Zoom out of range', 400
+    except:
+        return 'Could not process zoom', 400
 
+    try:
         m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
         if 'markers' in request.args:
