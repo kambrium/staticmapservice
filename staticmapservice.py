@@ -40,8 +40,7 @@ def create_map():
                 marker_diameter = int(marker_properties['diam'])
                 marker_object = CircleMarker((marker_lon, marker_lat), marker_color, marker_diameter)
                 m.add_marker(marker_object)
-
-        if 'lines' in request.args:
+        elif 'lines' in request.args:
             for line in request.args.getlist('lines'):
                 line_properties = dict(item.split(':') for item in line.split('|'))
                 line_coordinates = []
@@ -54,8 +53,7 @@ def create_map():
                 line_width = int(line_properties['width'])
                 line_object = Line(line_coordinates, line_color, line_width)
                 m.add_line(line_object)
-
-        if 'polygons' in request.args:
+        elif 'polygons' in request.args:
             for polygon in request.args.getlist('polygons'):
                 polygon_properties = dict(item.split(':') for item in polygon.split('|'))
                 polygon_coordinates = []
@@ -68,6 +66,8 @@ def create_map():
                 polygon_outline_color = polygon_properties['ocolor']
                 polygon_object = Polygon(polygon_coordinates, polygon_fill_color, polygon_outline_color)
                 m.add_polygon(polygon_object)
+        else:
+            return 'Could not find markers and/or lines and/or polygons', 400
 
         image = m.render(zoom=zoom)
 
