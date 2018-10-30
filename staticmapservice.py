@@ -28,11 +28,11 @@ def create_map():
     except:
         return 'Could not process zoom', 400
 
-    try:
-        m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
+    m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
-        if 'markers' in request.args:
-            for marker in request.args.getlist('markers'):
+    if 'markers' in request.args:
+        for marker in request.args.getlist('markers'):
+            try:
                 marker_properties = dict(item.split(':') for item in marker.split('|'))
                 marker_lat = float(marker_properties['coords'].split(',')[0])
                 marker_lon = float(marker_properties['coords'].split(',')[1])
@@ -40,8 +40,11 @@ def create_map():
                 marker_diameter = int(marker_properties['diam'])
                 marker_object = CircleMarker((marker_lon, marker_lat), marker_color, marker_diameter)
                 m.add_marker(marker_object)
-        elif 'lines' in request.args:
-            for line in request.args.getlist('lines'):
+            except:
+                return 'Could not process markers', 400
+    elif 'lines' in request.args:
+        for line in request.args.getlist('lines'):
+            try:
                 line_properties = dict(item.split(':') for item in line.split('|'))
                 line_coordinates = []
                 for coord in line_properties['coords'].split(';'):
@@ -53,8 +56,11 @@ def create_map():
                 line_width = int(line_properties['width'])
                 line_object = Line(line_coordinates, line_color, line_width)
                 m.add_line(line_object)
-        elif 'polygons' in request.args:
-            for polygon in request.args.getlist('polygons'):
+            except:
+                return 'Could not process lines', 400
+    elif 'polygons' in request.args:
+        for polygon in request.args.getlist('polygons'):
+            try:
                 polygon_properties = dict(item.split(':') for item in polygon.split('|'))
                 polygon_coordinates = []
                 for coord in polygon_properties['coords'].split(';'):
@@ -66,15 +72,14 @@ def create_map():
                 polygon_outline_color = polygon_properties['ocolor']
                 polygon_object = Polygon(polygon_coordinates, polygon_fill_color, polygon_outline_color)
                 m.add_polygon(polygon_object)
-        else:
-            return 'Could not find markers and/or lines and/or polygons', 400
+            except:
+                return 'Could not process polygons', 400
+    else:
+        return 'Could not find markers and/or lines and/or polygons', 400
 
-        image = m.render(zoom=zoom)
+    image = m.render(zoom=zoom)
 
-        return serve_image(image)
-
-    except:
-        return (app.config['INFO_TEXT'])
+    return serve_image(image)
 
 def serve_image(image):
     image_io = BytesIO()
