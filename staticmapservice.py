@@ -30,7 +30,7 @@ def create_map():
 
     m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
-    if 'markers' in request.args:
+    if ('markers' or 'lines' or 'polygons') in request.args:
         for marker in request.args.getlist('markers'):
             try:
                 marker_properties = dict(item.split(':') for item in marker.split('|'))
@@ -42,7 +42,7 @@ def create_map():
                 m.add_marker(marker_object)
             except:
                 return 'Could not process markers', 400
-    elif 'lines' in request.args:
+
         for line in request.args.getlist('lines'):
             try:
                 line_properties = dict(item.split(':') for item in line.split('|'))
@@ -58,7 +58,7 @@ def create_map():
                 m.add_line(line_object)
             except:
                 return 'Could not process lines', 400
-    elif 'polygons' in request.args:
+
         for polygon in request.args.getlist('polygons'):
             try:
                 polygon_properties = dict(item.split(':') for item in polygon.split('|'))
