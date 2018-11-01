@@ -1,7 +1,7 @@
 staticmapservice - A web service that generates static maps
 ===========================================================
 
-![staticmapservice logo](staticmapservice_logo.jpg)
+![staticmapservice logo](staticmapservice_logo.png)
 
 About
 -----
