@@ -1,6 +1,7 @@
 from flask import Flask, request, send_file
 from io import BytesIO
 from staticmap import CircleMarker, Line, Polygon, StaticMap
+import re
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -37,6 +38,7 @@ def create_map():
                 marker_lat = float(marker_properties['coords'].split(',')[0])
                 marker_lon = float(marker_properties['coords'].split(',')[1])
                 marker_color = marker_properties['color']
+                check_hex_code(marker_color)
                 marker_diameter = int(marker_properties['diam'])
                 marker_object = CircleMarker((marker_lon, marker_lat), marker_color, marker_diameter)
                 m.add_marker(marker_object)
@@ -53,6 +55,7 @@ def create_map():
                     line_coordinate.append(float(coord.split(',')[0]))
                     line_coordinates.append(line_coordinate)
                 line_color = line_properties['color']
+                check_hex_code(line_color)
                 line_width = int(line_properties['width'])
                 line_object = Line(line_coordinates, line_color, line_width)
                 m.add_line(line_object)
@@ -69,7 +72,9 @@ def create_map():
                     polygon_coordinate.append(float(coord.split(',')[0]))
                     polygon_coordinates.append(polygon_coordinate)
                 polygon_fill_color = polygon_properties['fcolor']
+                check_hex_code(polygon_fill_color)
                 polygon_outline_color = polygon_properties['ocolor']
+                check_hex_code(polygon_outline_color)
                 polygon_object = Polygon(polygon_coordinates, polygon_fill_color, polygon_outline_color)
                 m.add_polygon(polygon_object)
             except:
@@ -86,3 +91,9 @@ def serve_image(image):
     image.save(image_io, format='PNG')
     image_io.seek(0)
     return send_file(image_io, mimetype='image/png')
+
+def check_hex_code(color):
+    if re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color):                      
+        pass
+    else:
+        raise
