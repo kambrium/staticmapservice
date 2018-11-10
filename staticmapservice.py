@@ -31,86 +31,120 @@ def create_map():
 
     static_map = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
-    if any(x in request.args for x in ('markers', 'lines', 'polygons', 'icons')):
-        for marker in request.args.getlist('markers'):
+    if any(x in request.args for x in ('marker', 'line', 'polygon', 'icon')):
+        for m in request.args.getlist('marker'):
             try:
-                marker_properties = dict(item.split(':') for item in marker.split('|'))
-                marker_lat = float(marker_properties['coords'].split(',')[0])
-                marker_lon = float(marker_properties['coords'].split(',')[1])
-                marker_color = marker_properties['color']
-                check_hex_code(marker_color)
-                marker_diameter = int(marker_properties['diam'])
-                m = CircleMarker((marker_lon, marker_lat), marker_color, marker_diameter)
-                static_map.add_marker(m)
+                marker = process_marker(m)
+                static_map.add_marker(marker)
             except:
-                return 'Could not process markers', 400
+                return 'Could not process marker', 400
 
-        for line in request.args.getlist('lines'):
+        for l in request.args.getlist('line'):
             try:
-                line_properties = dict(item.split(':') for item in line.split('|'))
-                assert len(line_properties['coords'].split(';')) > 1
-                line_color = line_properties['color']
-                check_hex_code(line_color)
-                line_width = int(line_properties['width'])
-                line_coordinates = []
-                i = 0
-                for coord in line_properties['coords'].split(';'):
-                    line_coordinate = []
-                    line_coordinate.append(float(coord.split(',')[1]))
-                    line_coordinate.append(float(coord.split(',')[0]))
-                    if i == 0:
-                        line_coordinates.append(line_coordinate)
-                    elif i == 1:
-                        line_coordinates.append(line_coordinate)
-                        coord_for_next_loop = line_coordinate
-                    else:
-                        line_coordinates.append(coord_for_next_loop)
-                        line_coordinates.append(line_coordinate)
-                        coord_for_next_loop = line_coordinate
-                    if len(line_coordinates) % 2 == 0:
-                        l = Line(line_coordinates, line_color, line_width)
-                        static_map.add_line(l)
-                        line_coordinates = []
-                    i += 1
+                segments = process_line(l)
+                for s in segments:
+                    static_map.add_line(s)
             except:
-                return 'Could not process lines', 400
+                return 'Could not process line', 400
 
-        for polygon in request.args.getlist('polygons'):
+        for p in request.args.getlist('polygon'):
             try:
-                polygon_properties = dict(item.split(':') for item in polygon.split('|'))
-                polygon_coordinates = []
-                for coord in polygon_properties['coords'].split(';'):
-                    polygon_coordinate = []
-                    polygon_coordinate.append(float(coord.split(',')[1]))
-                    polygon_coordinate.append(float(coord.split(',')[0]))
-                    polygon_coordinates.append(polygon_coordinate)
-                polygon_fill_color = polygon_properties['fcolor']
-                check_hex_code(polygon_fill_color)
-                polygon_outline_color = polygon_properties['ocolor']
-                check_hex_code(polygon_outline_color)
-                p = Polygon(polygon_coordinates, polygon_fill_color, polygon_outline_color)
-                static_map.add_polygon(p)
+                polygon = process_polygon(p)
+                static_map.add_polygon(polygon)
             except:
-                return 'Could not process polygons', 400
+                return 'Could not process polygon', 400
     
-        for icon in request.args.getlist('icons'):
+        for i in request.args.getlist('icon'):
             try:
-                icon_properties = dict(item.split(':') for item in icon.split('|'))
-                icon_lat = float(icon_properties['coords'].split(',')[0])
-                icon_lon = float(icon_properties['coords'].split(',')[1])
-                icon_name = icon_properties['name']
-                icon_offset_x = int(icon_properties['offx'])
-                icon_offset_y = int(icon_properties['offy'])
-                i = IconMarker((icon_lon, icon_lat), './icons/{0}.png'.format(icon_name), icon_offset_x, icon_offset_y)
-                static_map.add_marker(i)
+                icon = process_icon(i)
+                static_map.add_marker(icon)
             except:
-                return 'Could not process icons', 400
+                return 'Could not process icon', 400
     else:
         return 'Could not find markers and/or lines and/or polygons and/or icons', 400
 
     image = static_map.render(zoom=zoom)
 
     return serve_image(image)
+
+def process_marker(m):
+    m_properties = dict(item.split(':') for item in m.split('|'))
+    
+    m_color = m_properties['color']
+    check_hex_code(m_color)
+    m_diameter = int(m_properties['diam'])
+
+    m_lat = float(m_properties['coords'].split(',')[0])
+    m_lon = float(m_properties['coords'].split(',')[1])
+
+    return CircleMarker((m_lon, m_lat), m_color, m_diameter)
+
+def process_line(l):
+    l_properties = dict(item.split(':') for item in l.split('|'))
+
+    assert len(l_properties['coords'].split(';')) > 1
+
+    l_color = l_properties['color']
+    check_hex_code(l_color)
+    l_width = int(l_properties['width'])
+
+    l_segments = []
+    s_coordinates = []
+    i = 0
+
+    for coord in l_properties['coords'].split(';'):
+        s_coordinate = []
+        s_coordinate.append(float(coord.split(',')[1]))
+        s_coordinate.append(float(coord.split(',')[0]))
+
+        if i == 0:
+            s_coordinates.append(s_coordinate)
+        elif i == 1:
+            s_coordinates.append(s_coordinate)
+            coord_for_next_loop = s_coordinate
+        else:
+            s_coordinates.append(coord_for_next_loop)
+            s_coordinates.append(s_coordinate)
+            coord_for_next_loop = s_coordinate
+
+        if len(s_coordinates) % 2 == 0:
+            l_segment = Line(s_coordinates, l_color, l_width)
+            l_segments.append(l_segment)
+            s_coordinates = []
+
+        i += 1
+
+    return l_segments
+
+def process_polygon(p):
+    p_properties = dict(item.split(':') for item in p.split('|'))
+    
+    p_fill_color = p_properties['fcolor']
+    check_hex_code(p_fill_color)
+    p_outline_color = p_properties['ocolor']
+    check_hex_code(p_outline_color)
+
+    p_coordinates = []
+
+    for coord in p_properties['coords'].split(';'):
+        p_coordinate = []
+        p_coordinate.append(float(coord.split(',')[1]))
+        p_coordinate.append(float(coord.split(',')[0]))
+        p_coordinates.append(p_coordinate)
+    
+    return Polygon(p_coordinates, p_fill_color, p_outline_color)
+
+def process_icon(i):
+    i_properties = dict(item.split(':') for item in i.split('|'))
+    
+    i_name = i_properties['name']
+    i_offset_x = int(i_properties['offx'])
+    i_offset_y = int(i_properties['offy'])
+
+    i_lat = float(i_properties['coords'].split(',')[0])
+    i_lon = float(i_properties['coords'].split(',')[1])
+
+    return IconMarker((i_lon, i_lat), './icons/{0}.png'.format(i_name), i_offset_x, i_offset_y)
 
 def serve_image(image):
     image_io = BytesIO()
