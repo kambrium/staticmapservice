@@ -44,7 +44,7 @@ This is a list of currently supported query parameters. Please see below for wor
 | h | Height of the map (in pixels) |
 | z | Zoom level |
 | markers | Properties of a circle marker separated by `\|`: coordinates (`coords`, one lat/lon pair), diameter (`diam`, in pixels) and color (`color`, hexadecimal code, # encoded as %23) |
-| lines | Properties of a line separated by `\|`: coordinates (`coords`, two lat/lon pairs), width (`width`, in pixels) and color (`color`, hexadecimal code, # encoded as %23) |
+| lines | Properties of a line separated by `\|`: coordinates (`coords`, multiple lat/lon pairs), width (`width`, in pixels) and color (`color`, hexadecimal code, # encoded as %23) |
 | polygons | Properties of a polygon separated by `\|`: coordinates (`coords`, multiple lat/lon pairs), fill and outline color (`fcolor`, `ocolor`, hexadecimal codes, # encoded as %23) |
 | icons | Properties of an icon marker separated by `\|`: coordinates (`coords`, one lat/lon pair), name of the icon (`name`, must be identical with the name of the icon file to be displayed, icons must be stored in the folder ./icons) and offset (`offx`, `offy`, in pixels) |
 
