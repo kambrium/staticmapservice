@@ -48,17 +48,30 @@ def create_map():
         for line in request.args.getlist('lines'):
             try:
                 line_properties = dict(item.split(':') for item in line.split('|'))
+                assert len(line_properties['coords'].split(';')) > 1
+                line_color = line_properties['color']
+                check_hex_code(line_color)
+                line_width = int(line_properties['width'])
                 line_coordinates = []
+                i = 0
                 for coord in line_properties['coords'].split(';'):
                     line_coordinate = []
                     line_coordinate.append(float(coord.split(',')[1]))
                     line_coordinate.append(float(coord.split(',')[0]))
-                    line_coordinates.append(line_coordinate)
-                line_color = line_properties['color']
-                check_hex_code(line_color)
-                line_width = int(line_properties['width'])
-                l = Line(line_coordinates, line_color, line_width)
-                static_map.add_line(l)
+                    if i == 0:
+                        line_coordinates.append(line_coordinate)
+                    elif i == 1:
+                        line_coordinates.append(line_coordinate)
+                        coord_for_next_loop = line_coordinate
+                    else:
+                        line_coordinates.append(coord_for_next_loop)
+                        line_coordinates.append(line_coordinate)
+                        coord_for_next_loop = line_coordinate
+                    if len(line_coordinates) % 2 == 0:
+                        l = Line(line_coordinates, line_color, line_width)
+                        static_map.add_line(l)
+                        line_coordinates = []
+                    i += 1
             except:
                 return 'Could not process lines', 400
 
@@ -92,7 +105,6 @@ def create_map():
                 static_map.add_marker(i)
             except:
                 return 'Could not process icons', 400
-    
     else:
         return 'Could not find markers and/or lines and/or polygons and/or icons', 400
 
