@@ -1,6 +1,6 @@
 from flask import Flask, request, send_file
 from io import BytesIO
-from staticmap import CircleMarker, Line, Polygon, StaticMap
+from staticmap import CircleMarker, IconMarker, Line, Polygon, StaticMap
 import re
 
 app = Flask(__name__)
@@ -31,7 +31,7 @@ def create_map():
 
     m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
-    if ('markers' or 'lines' or 'polygons') in request.args:
+    if any(x in request.args for x in ('markers', 'lines', 'polygons', 'icons')):
         for marker in request.args.getlist('markers'):
             try:
                 marker_properties = dict(item.split(':') for item in marker.split('|'))
@@ -79,8 +79,22 @@ def create_map():
                 m.add_polygon(polygon_object)
             except:
                 return 'Could not process polygons', 400
+    
+        for icon in request.args.getlist('icons'):
+            try:
+                icon_properties = dict(item.split(':') for item in icon.split('|'))
+                icon_lat = float(icon_properties['coords'].split(',')[0])
+                icon_lon = float(icon_properties['coords'].split(',')[1])
+                icon_name = icon_properties['name']
+                icon_offset_x = int(icon_properties['offx'])
+                icon_offset_y = int(icon_properties['offy'])
+                icon_object = IconMarker((icon_lon, icon_lat), './icons/{0}.png'.format(icon_name), icon_offset_x, icon_offset_y)
+                m.add_marker(icon_object)
+            except:
+                return 'Could not process icons', 400
+    
     else:
-        return 'Could not find markers and/or lines and/or polygons', 400
+        return 'Could not find markers and/or lines and/or polygons and/or icons', 400
 
     image = m.render(zoom=zoom)
 
