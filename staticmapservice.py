@@ -82,7 +82,8 @@ def process_marker(m):
 def process_line(l):
     l_properties = dict(item.split(':') for item in l.split('|'))
 
-    assert len(l_properties['coords'].split(';')) > 1
+    l_coords = l_properties['coords'].split(';')
+    assert len(l_coords) > 1
 
     l_color = l_properties['color']
     check_hex_code(l_color)
@@ -92,7 +93,7 @@ def process_line(l):
     s_coordinates = []
     i = 0
 
-    for coord in l_properties['coords'].split(';'):
+    for coord in l_coords:
         s_coordinate = []
         s_coordinate.append(float(coord.split(',')[1]))
         s_coordinate.append(float(coord.split(',')[0]))
