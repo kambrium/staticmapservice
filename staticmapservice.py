@@ -151,10 +151,8 @@ def serve_image(image):
     image_io = BytesIO()
     image.save(image_io, format='PNG')
     image_io.seek(0)
+    
     return send_file(image_io, mimetype='image/png')
 
 def check_hex_code(color):
-    if re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color):                      
-        pass
-    else:
-        raise
+    assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color)
