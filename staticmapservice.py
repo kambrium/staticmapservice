@@ -29,7 +29,7 @@ def create_map():
     except:
         return 'Could not process zoom', 400
 
-    m = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
+    static_map = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
     if any(x in request.args for x in ('markers', 'lines', 'polygons', 'icons')):
         for marker in request.args.getlist('markers'):
@@ -40,8 +40,8 @@ def create_map():
                 marker_color = marker_properties['color']
                 check_hex_code(marker_color)
                 marker_diameter = int(marker_properties['diam'])
-                marker_object = CircleMarker((marker_lon, marker_lat), marker_color, marker_diameter)
-                m.add_marker(marker_object)
+                m = CircleMarker((marker_lon, marker_lat), marker_color, marker_diameter)
+                static_map.add_marker(m)
             except:
                 return 'Could not process markers', 400
 
@@ -57,8 +57,8 @@ def create_map():
                 line_color = line_properties['color']
                 check_hex_code(line_color)
                 line_width = int(line_properties['width'])
-                line_object = Line(line_coordinates, line_color, line_width)
-                m.add_line(line_object)
+                l = Line(line_coordinates, line_color, line_width)
+                static_map.add_line(l)
             except:
                 return 'Could not process lines', 400
 
@@ -75,8 +75,8 @@ def create_map():
                 check_hex_code(polygon_fill_color)
                 polygon_outline_color = polygon_properties['ocolor']
                 check_hex_code(polygon_outline_color)
-                polygon_object = Polygon(polygon_coordinates, polygon_fill_color, polygon_outline_color)
-                m.add_polygon(polygon_object)
+                p = Polygon(polygon_coordinates, polygon_fill_color, polygon_outline_color)
+                static_map.add_polygon(p)
             except:
                 return 'Could not process polygons', 400
     
@@ -88,15 +88,15 @@ def create_map():
                 icon_name = icon_properties['name']
                 icon_offset_x = int(icon_properties['offx'])
                 icon_offset_y = int(icon_properties['offy'])
-                icon_object = IconMarker((icon_lon, icon_lat), './icons/{0}.png'.format(icon_name), icon_offset_x, icon_offset_y)
-                m.add_marker(icon_object)
+                i = IconMarker((icon_lon, icon_lat), './icons/{0}.png'.format(icon_name), icon_offset_x, icon_offset_y)
+                static_map.add_marker(i)
             except:
                 return 'Could not process icons', 400
     
     else:
         return 'Could not find markers and/or lines and/or polygons and/or icons', 400
 
-    image = m.render(zoom=zoom)
+    image = static_map.render(zoom=zoom)
 
     return serve_image(image)
 
