@@ -8,8 +8,12 @@ app.config.from_pyfile('config.py')
 
 @app.route('/')
 def create_map():
+    """Main method where map is put together"""
+
+    # Holds the amount of points (p), nodes (n) and vertices (v) at the present time
     pnv = 0
 
+    # General properties of the map: width, height and zoom level
     try:
         width = int(request.args.get('w', default = app.config['DEFAULT_WIDTH']))
         if width > int(app.config['MAX_WIDTH']):
@@ -31,8 +35,10 @@ def create_map():
     except:
         return 'Could not process zoom', 400
 
+    # Create static map object
     static_map = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
+    # Add polygons, polylines, markers and icons to the map
     if any(x in request.args for x in ('marker', 'line', 'polygon', 'icon')):
         for p in request.args.getlist('polygon'):
             try:
@@ -48,6 +54,7 @@ def create_map():
             try:
                 segments, updated_pnv = process_line(l, pnv)
                 pnv = updated_pnv
+                # Special case polylines: Add each segment of polyline to map
                 for s in segments:
                     static_map.add_line(s)
             except PnvError:
@@ -77,11 +84,14 @@ def create_map():
     else:
         return 'Could not find markers and/or lines and/or polygons and/or icons', 400
 
+    # Render the map
     image = static_map.render(zoom=zoom)
 
     return serve_image(image)
 
 def process_marker(m, pnv):
+    """Creates a CircleMarker object with the properties from the request"""
+
     m_properties = dict(item.split(':') for item in m.split('|'))
     
     m_color = m_properties['color']
@@ -96,6 +106,8 @@ def process_marker(m, pnv):
     return CircleMarker((m_lon, m_lat), m_color, m_diameter), pnv
 
 def process_line(l, pnv):
+    """Creates a list of Line objects with the properties from the request"""
+
     l_properties = dict(item.split(':') for item in l.split('|'))
 
     l_coords = l_properties['coords'].split(';')
@@ -115,6 +127,7 @@ def process_line(l, pnv):
         s_coordinate.append(float(coord.split(',')[1]))
         s_coordinate.append(float(coord.split(',')[0]))
 
+        # Polyline handling
         if i == 0:
             s_coordinates.append(s_coordinate)
         elif i == 1:
@@ -135,6 +148,8 @@ def process_line(l, pnv):
     return l_segments, pnv
 
 def process_polygon(p, pnv):
+    """Creates a Polygon object with the properties from the request"""
+
     p_properties = dict(item.split(':') for item in p.split('|'))
     
     p_fill_color = p_properties['fcolor']
@@ -154,6 +169,8 @@ def process_polygon(p, pnv):
     return Polygon(p_coordinates, p_fill_color, p_outline_color), pnv
 
 def process_icon(i, pnv):
+    """Creates an IconMarker object with the properties from the request"""
+
     i_properties = dict(item.split(':') for item in i.split('|'))
     
     i_name = i_properties['name']
@@ -168,6 +185,8 @@ def process_icon(i, pnv):
     return IconMarker((i_lon, i_lat), './icons/{0}.png'.format(i_name), i_offset_x, i_offset_y), pnv
 
 def serve_image(image):
+    """Saves map in a stream and serves it"""
+
     image_io = BytesIO()
     image.save(image_io, format='PNG')
     image_io.seek(0)
@@ -175,9 +194,13 @@ def serve_image(image):
     return send_file(image_io, mimetype='image/png')
 
 def check_hex_code(color):
+    """Checks if the given string is a hex color code"""
+
     assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color)
 
 def pnv_counter(pnv):
+    """Checks if the amount of points, nodes and vertices in the request is below the maximum value"""
+
     pnv += 1
     if pnv <= int(app.config['MAX_PNV']):
         return pnv
@@ -185,4 +208,6 @@ def pnv_counter(pnv):
         raise PnvError
 
 class PnvError(Exception):
+    """Raised when the amount of points, nodes and vertices in the request is higher than the max value"""
+
     pass
