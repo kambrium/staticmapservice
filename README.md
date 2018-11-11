@@ -5,7 +5,7 @@ staticmapservice - A web service that generates static maps
 
 About
 -----
-staticmapservice is a web service written in Python that generates static maps similar to the Maps Static API by Google. Essentially this software is a [Flask](http://flask.pocoo.org/) wrapper around the Python library [staticmap](https://github.com/komoot/staticmap). At the moment, this software can generate static maps based on XYZ tiles (e.g. [OpenStreetMap based data](https://wiki.openstreetmap.org/wiki/Tile_servers)) with circle markers, lines, polygons and icons.
+staticmapservice is a configurable web service written in Python that generates static maps similar to the Maps Static API by Google. Essentially this software is a [Flask](http://flask.pocoo.org/) wrapper around the Python library [staticmap](https://github.com/komoot/staticmap). At the moment, this software can generate static maps based on XYZ tiles (e.g. [OpenStreetMap based data](https://wiki.openstreetmap.org/wiki/Tile_servers)) with circle markers, polylines, polygons and icons.
 
 Quick start
 -----------
@@ -90,7 +90,7 @@ http://127.0.0.1:5000/?marker=coords:48.25,11.22|diam:10|color:%233F33FF&line=co
 
 Configuration
 -------------
-This application can be configured with the `config.py` file. Examples for configurable parameters are the maximum size of a map or the URL of the tile server. See the file `config.py` for a complete list of all configurable parameters.
+This application can be configured with the `config.py` file. Examples for configurable parameters are the maximum size of a map, the URL of the tile server or the maximum amount of points, nodes and vertices per request. See the file `config.py` for a complete list of all configurable parameters.
 
 License
 -------
