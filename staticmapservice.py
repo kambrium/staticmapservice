@@ -8,6 +8,8 @@ app.config.from_pyfile('config.py')
 
 @app.route('/')
 def create_map():
+    pnv = 0
+
     try:
         width = int(request.args.get('w', default = app.config['DEFAULT_WIDTH']))
         if width > int(app.config['MAX_WIDTH']):
@@ -32,34 +34,46 @@ def create_map():
     static_map = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
 
     if any(x in request.args for x in ('marker', 'line', 'polygon', 'icon')):
-        for m in request.args.getlist('marker'):
+        for p in request.args.getlist('polygon'):
             try:
-                marker = process_marker(m)
-                static_map.add_marker(marker)
+                polygon, updated_pnv = process_polygon(p, pnv)
+                pnv = updated_pnv
+                static_map.add_polygon(polygon)
+            except PnvError:
+                return 'Exceeded maximum amount of points, nodes and vertices', 400
             except:
-                return 'Could not process marker', 400
-
+                return 'Could not process polygon', 400
+        
         for l in request.args.getlist('line'):
             try:
-                segments = process_line(l)
+                segments, updated_pnv = process_line(l, pnv)
+                pnv = updated_pnv
                 for s in segments:
                     static_map.add_line(s)
+            except PnvError:
+                return 'Exceeded maximum amount of points, nodes and vertices', 400
             except:
                 return 'Could not process line', 400
 
-        for p in request.args.getlist('polygon'):
-            try:
-                polygon = process_polygon(p)
-                static_map.add_polygon(polygon)
-            except:
-                return 'Could not process polygon', 400
-    
         for i in request.args.getlist('icon'):
             try:
-                icon = process_icon(i)
+                icon, updated_pnv = process_icon(i, pnv)
+                pnv = updated_pnv
                 static_map.add_marker(icon)
+            except PnvError:
+                return 'Exceeded maximum amount of points, nodes and vertices', 400
             except:
                 return 'Could not process icon', 400
+
+        for m in request.args.getlist('marker'):
+            try:
+                marker, updated_pnv = process_marker(m, pnv)
+                pnv = updated_pnv
+                static_map.add_marker(marker)
+            except PnvError:
+                return 'Exceeded maximum amount of points, nodes and vertices', 400
+            except:
+                return 'Could not process marker', 400
     else:
         return 'Could not find markers and/or lines and/or polygons and/or icons', 400
 
@@ -67,7 +81,7 @@ def create_map():
 
     return serve_image(image)
 
-def process_marker(m):
+def process_marker(m, pnv):
     m_properties = dict(item.split(':') for item in m.split('|'))
     
     m_color = m_properties['color']
@@ -77,9 +91,11 @@ def process_marker(m):
     m_lat = float(m_properties['coords'].split(',')[0])
     m_lon = float(m_properties['coords'].split(',')[1])
 
-    return CircleMarker((m_lon, m_lat), m_color, m_diameter)
+    pnv = pnv_counter(pnv)
 
-def process_line(l):
+    return CircleMarker((m_lon, m_lat), m_color, m_diameter), pnv
+
+def process_line(l, pnv):
     l_properties = dict(item.split(':') for item in l.split('|'))
 
     l_coords = l_properties['coords'].split(';')
@@ -94,6 +110,7 @@ def process_line(l):
     i = 0
 
     for coord in l_coords:
+        pnv = pnv_counter(pnv)
         s_coordinate = []
         s_coordinate.append(float(coord.split(',')[1]))
         s_coordinate.append(float(coord.split(',')[0]))
@@ -114,10 +131,10 @@ def process_line(l):
             s_coordinates = []
 
         i += 1
+    
+    return l_segments, pnv
 
-    return l_segments
-
-def process_polygon(p):
+def process_polygon(p, pnv):
     p_properties = dict(item.split(':') for item in p.split('|'))
     
     p_fill_color = p_properties['fcolor']
@@ -128,14 +145,15 @@ def process_polygon(p):
     p_coordinates = []
 
     for coord in p_properties['coords'].split(';'):
+        pnv = pnv_counter(pnv)
         p_coordinate = []
         p_coordinate.append(float(coord.split(',')[1]))
         p_coordinate.append(float(coord.split(',')[0]))
         p_coordinates.append(p_coordinate)
     
-    return Polygon(p_coordinates, p_fill_color, p_outline_color)
+    return Polygon(p_coordinates, p_fill_color, p_outline_color), pnv
 
-def process_icon(i):
+def process_icon(i, pnv):
     i_properties = dict(item.split(':') for item in i.split('|'))
     
     i_name = i_properties['name']
@@ -145,14 +163,26 @@ def process_icon(i):
     i_lat = float(i_properties['coords'].split(',')[0])
     i_lon = float(i_properties['coords'].split(',')[1])
 
-    return IconMarker((i_lon, i_lat), './icons/{0}.png'.format(i_name), i_offset_x, i_offset_y)
+    pnv = pnv_counter(pnv)
+
+    return IconMarker((i_lon, i_lat), './icons/{0}.png'.format(i_name), i_offset_x, i_offset_y), pnv
 
 def serve_image(image):
     image_io = BytesIO()
     image.save(image_io, format='PNG')
     image_io.seek(0)
-    
+
     return send_file(image_io, mimetype='image/png')
 
 def check_hex_code(color):
     assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color)
+
+def pnv_counter(pnv):
+    pnv += 1
+    if pnv <= int(app.config['MAX_PNV']):
+        return pnv
+    else:
+        raise PnvError
+
+class PnvError(Exception):
+    pass
