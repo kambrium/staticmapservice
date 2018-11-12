@@ -67,7 +67,7 @@ http://127.0.0.1:5000/?w=500&h=500&z=8&line=coords:48.2,11.2;47.5,11|width:4|col
 ### Map with polygon
 The following request creates a 400 pixels wide and 600 pixels high map. The zoom level is 5. A polygon will be drawn between the three points 48.2 (latitude), 11.2 (longitude), 47.5, 11 and 47.9, 12. The polygon is filled with the color #CD0000 (red) and its outline is #000000 (black).
 ```
-http://127.0.0.1:5000/?w=400&h=600&z=5&polygon=coords:48.2,11.2;47.5,11;47.9,12;48.2,11.2\|fcolor:%23CD0000\|ocolor:%23000000
+http://127.0.0.1:5000/?w=400&h=600&z=5&polygon=coords:48.2,11.2;47.5,11;47.9,12;48.2,11.2|fcolor:%23CD0000|ocolor:%23000000
 ```
 
 ### Map with icon
