@@ -1,6 +1,7 @@
 # Configuration file of staticmapservice
 
 TILE_SERVER = 'http://a.tile.osm.org/{z}/{x}/{y}.png'
+IS_TMS = False
 
 # Default values can be overwritten in each request
 DEFAULT_WIDTH = '300'

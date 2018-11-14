@@ -36,7 +36,7 @@ def create_map():
         return 'Could not process zoom', 400
 
     # Create static map object
-    static_map = StaticMap(width, height, url_template=app.config['TILE_SERVER'])
+    static_map = StaticMap(width, height, url_template=app.config['TILE_SERVER'], reverse_y=app.config['IS_TMS'])
 
     # Add polygons, polylines, markers and icons to the map
     if any(x in request.args for x in ('marker', 'line', 'polygon', 'icon')):
