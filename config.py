@@ -1,7 +1,7 @@
 # Configuration file of staticmapservice
 
 TILE_SERVER = 'http://a.tile.osm.org/{z}/{x}/{y}.png'
-IS_TMS = False
+IS_TMS = False # True if you use a TMS instead of OSM XYZ tiles
 
 # Default values can be overwritten in each request
 DEFAULT_WIDTH = '300'
