@@ -14,7 +14,7 @@ def create_map():
     # Holds the amount of points (p), nodes (n) and vertices (v) at the present time
     pnv = 0
 
-    # General properties of the map: width, height and zoom level
+    # General properties of the map: width, height, zoom level and center
     try:
         width = int(request.args.get('w', default=app.config['DEFAULT_WIDTH']))
         if width > int(app.config['MAX_WIDTH']):
