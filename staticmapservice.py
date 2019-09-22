@@ -37,15 +37,15 @@ def create_map():
     except:
         return 'Could not process zoom', 400
 
-    center = None
-    try:
-        center_lon = float(request.args.get("center_lon", default=None))
-        center_lat = float(request.args.get("center_lat", default=None))
-    except:
-        return 'Could not process center', 400
-
-    if center_lat and center_lon:
+    if request.args.get("center_lon") and request.args.get("center_lat"):
+        try:
+            center_lon = float(request.args.get("center_lon"))
+            center_lat = float(request.args.get("center_lat"))
+        except:
+            return 'Could not process center', 400
         center = (center_lon, center_lat)
+    else:
+        center = None
 
     # Create static map object
     static_map = StaticMap(width, height,
