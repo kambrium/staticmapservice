@@ -14,21 +14,25 @@ Quick start
     python3 -m venv /path/to/venv/of/staticmapservice
     source /path/to/venv/of/staticmapservice/bin/activate
     ```
-2. Clone staticmapservice and change to the application directory.
+2. Update pip. This is necessary because one of the dependencies of staticmapservice, the library [staticmap](https://github.com/komoot/staticmap), can't be installed with older versions of pip.
+    ```
+    pip install --upgrade pip
+    ```
+3. Clone staticmapservice and change to the application directory.
     ```
     git clone https://github.com/kambrium/staticmapservice
     cd staticmapservice
     ```
-3. Install requirements.
+4. Install requirements.
     ```
     pip install -r requirements.txt
     ```
-4. Export the FLASK_APP variable and run the software.
+5. Export the FLASK_APP variable and run the software.
     ```
     export FLASK_APP=staticmapservice.py
     flask run
     ```
-5. In your browser, send a request with some query parameters to the API. Here's an example that should work:
+6. In your browser, send a request with some query parameters to the API. Here's an example that should work:
     ```
     http://127.0.0.1:5000/?w=400&h=300&z=9&marker=coords:48.25,11.22|diam:10|color:%233F33FF
     ```
