@@ -14,7 +14,7 @@ Quick start
     python3 -m venv /path/to/venv/of/staticmapservice
     source /path/to/venv/of/staticmapservice/bin/activate
     ```
-2. Update pip. This is necessary because one of the dependencies of staticmapservice, the library [staticmap](https://github.com/komoot/staticmap), can't be installed with older versions of pip.
+2. Upgrade pip. This is necessary because one of the dependencies of staticmapservice, the library [staticmap](https://github.com/komoot/staticmap), can't be installed with older versions of pip.
     ```
     pip install --upgrade pip
     ```
