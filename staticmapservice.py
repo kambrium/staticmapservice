@@ -37,13 +37,13 @@ def create_map():
     except:
         return 'Could not process zoom', 400
 
-    if request.args.get("center_lon") and request.args.get("center_lat"):
+    if request.args.get("center"):
         try:
-            center_lon = float(request.args.get("center_lon"))
-            center_lat = float(request.args.get("center_lat"))
+            c_lat = float(request.args.get("center").split(',')[0])
+            c_lon = float(request.args.get("center").split(',')[1])
         except:
             return 'Could not process center', 400
-        center = (center_lon, center_lat)
+        center = (c_lon, c_lat)
     else:
         center = None
 
