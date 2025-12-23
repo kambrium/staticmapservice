@@ -2,7 +2,7 @@
 
 HEADERS = {'User-Agent':'staticmapservice/0.0.1'}
 
-TILE_SERVER = 'http://a.tile.osm.org/{z}/{x}/{y}.png'
+TILE_SERVER = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 IS_TMS = False # True if you use a TMS instead of OSM XYZ tiles
 
 # Default values can be overwritten in each request
